@@ -54,13 +54,16 @@
         "spatie/laravel-ignition": "^2.0",
         "symfony/mailer": "^6.0|^7.0|^8.0",
         "symfony/mime": "^6.0|^7.0|^8.0",
-        "symfony/var-dumper": "^6.0|^7.0|^8.0"
+        "symfony/var-dumper": "^6.0|^7.0|^8.0",
+        "jasonmccreary/double": "~0.10"
     },
     "autoload": {
         "psr-4": {
             "Laravel\\Nightwatch\\": "src/"
         },
-        "files": ["agent/helpers.php"]
+        "files": [
+            "agent/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
