@@ -105,15 +105,14 @@ class JobAttemptSensorTest extends TestCase
         putenv('VAPOR_SSM_PATH=/vapor');
 
         $mockSqsClient = Double::for(SqsClient::class);
-        $mockSqsClient->allows('deleteMessage')->andReturn(new Result(['MessageId' => 'test-message-id']));
-        $mockSqsClient->allows('sendMessage')->andReturn(new Result(['MessageId' => 'test-message-id']));
-        $mockSqsClient->allows('changeMessageVisibility')->andReturn(new Result(['MessageId' => 'test-message-id']));
+        $mockSqsClient->allows('deleteMessage')->returns(new Result(['MessageId' => 'test-message-id']));
+        $mockSqsClient->allows('sendMessage')->returns(new Result(['MessageId' => 'test-message-id']));
+        $mockSqsClient->allows('changeMessageVisibility')->returns(new Result(['MessageId' => 'test-message-id']));
 
         $mockSqsConnector = Double::for(SqsConnector::class);
-        $mockSqsConnector->shouldReceive('connect')
-            ->andReturn(new VaporQueue($mockSqsClient, 'default'));
+        $mockSqsConnector->allows('connect')->returns(new VaporQueue($mockSqsClient, 'default'));
 
-        $mockSqsClient->allows('getOverflowStorage')->andReturn([]);
+        $mockSqsClient->allows('getOverflowStorage')->returns([]);
 
         $this->app['queue']->extend('sqs', fn () => $mockSqsConnector);
 
