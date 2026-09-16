@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Sensors;
 
+use JMac\Testing\Double;
 use App\Models\User;
 use Aws\Result;
 use Aws\Sqs\SqsClient;
@@ -103,12 +104,12 @@ class JobAttemptSensorTest extends TestCase
 
         putenv('VAPOR_SSM_PATH=/vapor');
 
-        $mockSqsClient = Mockery::mock(SqsClient::class);
+        $mockSqsClient = Double::for(SqsClient::class);
         $mockSqsClient->allows('deleteMessage')->andReturn(new Result(['MessageId' => 'test-message-id']));
         $mockSqsClient->allows('sendMessage')->andReturn(new Result(['MessageId' => 'test-message-id']));
         $mockSqsClient->allows('changeMessageVisibility')->andReturn(new Result(['MessageId' => 'test-message-id']));
 
-        $mockSqsConnector = Mockery::mock(SqsConnector::class);
+        $mockSqsConnector = Double::for(SqsConnector::class);
         $mockSqsConnector->shouldReceive('connect')
             ->andReturn(new VaporQueue($mockSqsClient, 'default'));
 
