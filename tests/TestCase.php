@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Env;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use JMac\Testing\Integrations\PHPUnit\VerifiesDoubles;
 use Laravel\Nightwatch\Compatibility;
 use Laravel\Nightwatch\Core;
 use Laravel\Nightwatch\ExecutionStage;
@@ -50,7 +51,7 @@ use function touch;
 
 abstract class TestCase extends OrchestraTestCase
 {
-    use RefreshDatabase, WithWorkbench;
+    use RefreshDatabase, VerifiesDoubles, WithWorkbench;
 
     protected Core $core;
 
