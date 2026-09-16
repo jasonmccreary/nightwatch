@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Sensors;
 
-use JMac\Testing\Double;
 use App\Models\User;
 use Aws\MockHandler;
 use Aws\Result;
@@ -34,6 +33,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Redis;
+use JMac\Testing\Double;
 use Laravel\Nightwatch\Compatibility;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
@@ -107,7 +107,7 @@ class JobAttemptSensorTest extends TestCase
         // SqsClient's methods are magic (__call-forwarded from the AWS API definitions), so
         // they can't be doubled directly. Instead, use the SDK's own MockHandler transport
         // wired into a real client. See https://testdoublephp.com/blog/why-doesnt-double-mock-magic-methods.
-        $mockHandler = new MockHandler();
+        $mockHandler = new MockHandler;
         $respondWithResult = function () use (&$respondWithResult, $mockHandler) {
             $mockHandler->append($respondWithResult);
 
