@@ -38,7 +38,6 @@ use Laravel\Nightwatch\Facades\Nightwatch;
 use Laravel\Vapor\Console\Commands\VaporWorkCommand;
 use Laravel\Vapor\Events\LambdaEvent;
 use Laravel\Vapor\Queue\VaporQueue;
-use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
