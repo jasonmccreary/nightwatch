@@ -4,6 +4,7 @@ namespace Tests\Feature\Sensors;
 
 use JMac\Testing\Double;
 use App\Models\User;
+use Aws\MockHandler;
 use Aws\Result;
 use Aws\Sqs\SqsClient;
 use Carbon\CarbonImmutable;
@@ -103,15 +104,26 @@ class JobAttemptSensorTest extends TestCase
 
         putenv('VAPOR_SSM_PATH=/vapor');
 
-        $mockSqsClient = Double::for(SqsClient::class);
-        $mockSqsClient->allows('deleteMessage')->returns(new Result(['MessageId' => 'test-message-id']));
-        $mockSqsClient->allows('sendMessage')->returns(new Result(['MessageId' => 'test-message-id']));
-        $mockSqsClient->allows('changeMessageVisibility')->returns(new Result(['MessageId' => 'test-message-id']));
+        // SqsClient's methods are magic (__call-forwarded from the AWS API definitions), so
+        // they can't be doubled directly. Instead, use the SDK's own MockHandler transport
+        // wired into a real client. See https://testdoublephp.com/blog/why-doesnt-double-mock-magic-methods.
+        $mockHandler = new MockHandler();
+        $respondWithResult = function () use (&$respondWithResult, $mockHandler) {
+            $mockHandler->append($respondWithResult);
+
+            return new Result(['MessageId' => 'test-message-id']);
+        };
+        $mockHandler->append($respondWithResult);
+
+        $sqsClient = new SqsClient([
+            'region' => 'us-east-1',
+            'version' => 'latest',
+            'credentials' => ['key' => 'foo', 'secret' => 'bar'],
+            'handler' => $mockHandler,
+        ]);
 
         $mockSqsConnector = Double::for(SqsConnector::class);
-        $mockSqsConnector->allows('connect')->returns(new VaporQueue($mockSqsClient, 'default'));
-
-        $mockSqsClient->allows('getOverflowStorage')->returns([]);
+        $mockSqsConnector->allows('connect')->returns(new VaporQueue($sqsClient, 'default'));
 
         $this->app['queue']->extend('sqs', fn () => $mockSqsConnector);
 
