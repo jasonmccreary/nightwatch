@@ -123,7 +123,7 @@ class JobAttemptSensorTest extends TestCase
         ]);
 
         $mockSqsConnector = Double::for(SqsConnector::class);
-        $mockSqsConnector->allows('connect')->returns(new VaporQueue($sqsClient, 'default'));
+        $mockSqsConnector->expects('connect')->returns(new VaporQueue($sqsClient, 'default'));
 
         $this->app['queue']->extend('sqs', fn () => $mockSqsConnector);
 
